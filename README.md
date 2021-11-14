@@ -4,6 +4,10 @@ Messing around with startnet test net ideally build some simple
 bridge. Starknet doesn't support ETH signing as of writing this
 so will need to perform to jiggery pockery to get something working
 
+## Todo
+
+- implement Account.cairo from OZ and get the caller that way.
+
 # Scripts
 
 ```
