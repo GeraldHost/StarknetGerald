@@ -11,16 +11,37 @@ from starkware.cairo.common.hash import hash2
 from starkware.cairo.common.signature import (verify_ecdsa_signature)
 from starkware.starknet.common.syscalls import get_tx_signature
 
+const L1_CONTRACT_ADDRESS = ()
+
 # Define a storage variable.
 @storage_var
 func balance(user : felt) -> (res : felt):
 end
 
+# deposit funds
+@l1_handler
+func deposit{
+        syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
+        range_check_ptr}(
+        from_address : felt, user : felt, amount : felt):
+    # Make sure the message was sent by the intended L1 contract.
+    assert from_address = L1_CONTRACT_ADDRESS
+
+    # Read the current balance.
+    let (res) = balance.read(user=user)
+
+    # Compute and update the new balance.
+    tempvar new_balance = res + amount
+    balance.write(user, new_balance)
+
+    return ()
+end
+
 # Increases the balance of the given user by the given amount.
 @external
-func increase_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
+func transfer{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
         range_check_ptr, ecdsa_ptr : SignatureBuiltin*}(
-        user : felt, amount : felt):
+        user : felt, amount : felt, to : felt):
     # Fetch the signature.
     let (sig_len : felt, sig : felt*) = get_tx_signature()
 
@@ -39,7 +60,8 @@ func increase_balance{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
         signature_s=sig[1])
 
     let (res) = balance.read(user=user)
-    balance.write(user, res + amount)
+    balance.write(user, res - amount)
+    balance.write(to, amount)
     return ()
 end
 
