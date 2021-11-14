@@ -11,7 +11,7 @@ from starkware.cairo.common.hash import hash2
 from starkware.cairo.common.signature import (verify_ecdsa_signature)
 from starkware.starknet.common.syscalls import get_tx_signature
 
-const L1_CONTRACT_ADDRESS = ()
+const L1_CONTRACT_ADDRESS = (0x5FbDB2315678afecb367f032d93F642f64180aa3)
 
 # Define a storage variable.
 @storage_var
@@ -25,7 +25,7 @@ func deposit{
         range_check_ptr}(
         from_address : felt, user : felt, amount : felt):
     # Make sure the message was sent by the intended L1 contract.
-    assert from_address = L1_CONTRACT_ADDRESS
+    # assert from_address = L1_CONTRACT_ADDRESS
 
     # Read the current balance.
     let (res) = balance.read(user=user)
