@@ -61,7 +61,8 @@ func transfer{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*,
 
     let (res) = balance.read(user=user)
     balance.write(user, res - amount)
-    balance.write(to, amount)
+    let (to_res) = balance.read(user=to)
+    balance.write(to, to_res + amount)
     return ()
 end
 
